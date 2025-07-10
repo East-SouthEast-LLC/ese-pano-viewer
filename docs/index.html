@@ -9,9 +9,18 @@
 </head>
 <body>
     <div class="main-container">
-        <div class="camera-controls">
-            <label><input type="radio" name="camera" value="faro" checked> Faro 150</label>
-            <label><input type="radio" name="camera" value="lb5"> LadyBug 5</label>
+        <div class="controls-container">
+            <div class="control-group">
+                <strong>Camera Type:</strong>
+                <label><input type="radio" name="camera" value="faro"> Faro 150</label>
+                <label><input type="radio" name="camera" value="lb5" checked> LadyBug 5</label>
+                <label><input type="radio" name="camera" value="navis"> NAVIS (Spherical)</label>
+            </div>
+            <div class="control-group">
+                <label for="vOffsetInput"><strong>Vertical Offset:</strong></label>
+                <input type="number" id="vOffsetInput" step="1" placeholder="e.g., -10">
+                <button id="applyVOffset">Apply</button>
+            </div>
         </div>
 
         <div id="panorama"></div>

@@ -2,6 +2,8 @@
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
 const panoramaContainer = document.getElementById('panorama');
+const vOffsetInput = document.getElementById('vOffsetInput');
+const applyVOffsetBtn = document.getElementById('applyVOffset');
 
 let viewer = null; // To hold the pannellum instance
 let lastFile = null; // Variable to store the last loaded file
@@ -25,16 +27,22 @@ function loadPanorama(file) {
     
     const imageUrl = URL.createObjectURL(file);
 
-    // Determine camera settings from radio buttons
+    // 1. Determine camera settings from radio buttons
     const cameraType = document.querySelector('input[name="camera"]:checked').value;
     let vaov, vOffset;
 
     if (cameraType === 'faro') {
         vaov = 150;
         vOffset = 15;
-    } else { // 'lb5'
+    } else { // for 'lb5' and 'navis'
         vaov = 180;
         vOffset = 0;
+    }
+
+    // 2. Override vOffset if a manual value is entered
+    const manualVOffset = parseFloat(vOffsetInput.value);
+    if (!isNaN(manualVOffset)) {
+        vOffset = manualVOffset;
     }
 
     // Initialize Pannellum with the correct projection settings
@@ -51,13 +59,20 @@ function loadPanorama(file) {
 
 // --- Event Listeners ---
 
-// Add event listeners to radio buttons to reload the pano with new settings
+// Reload the pano with new settings when a radio button is clicked
 document.querySelectorAll('input[name="camera"]').forEach(radio => {
     radio.addEventListener('change', () => {
-        loadPanorama(); // Reload with the last file
+        vOffsetInput.value = ''; // Clear manual offset when changing camera type
+        loadPanorama(); 
     });
 });
 
+// Reload the pano when the "Apply" button is clicked
+applyVOffsetBtn.addEventListener('click', () => {
+    loadPanorama();
+});
+
+// Drag and Drop listeners
 dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
     dropZone.classList.add('drag-over');
@@ -77,6 +92,7 @@ dropZone.addEventListener('drop', (e) => {
     }
 });
 
+// Click-to-upload listeners
 dropZone.addEventListener('click', () => {
     fileInput.click();
 });
