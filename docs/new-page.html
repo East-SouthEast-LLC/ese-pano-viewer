@@ -1,0 +1,358 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panorama</title>
+    <link rel="stylesheet" href="https://www.ese-llc.com/s/pannellum.css"/>
+    <script type="text/javascript" src="https://www.ese-llc.com/s/pannellum.js"></script>
+    <style>
+    #panorama {
+        width: 90vw;
+        height: 50vh;
+    }
+    </style>
+
+</head>
+<body>
+
+<style>
+.button {
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+</style>
+
+
+
+
+
+<tr>
+<td><input type="text" name="path" id="path"</td>
+</tr>
+<button onclick="imageName()">PANO NAME</button>
+
+<tr>
+<td><input type="text" name="last" id="last"</td>
+</tr>
+<button onclick="lastPicture()">LAST PIC NUMBER</button>
+
+<input type="radio" id="Faro" name="camera" value="Faro">
+<label for="Faro">Faro 150</label>
+<input type="radio" id="LB5" name="camera" value="LB5">
+<label for="LB5">LB5 180</label>
+<button onclick="cameraType()">Camera Type</button>
+
+
+</br>
+
+<button onclick="minusFunction()">MINUS</button>
+<button onclick="plusFunction()">PLUS</button>
+
+<tr>
+<td><input type="text" name="scene" id="scene"</td>
+</tr>
+<button onclick="sceneAdvance()">ADVANCE TO SCENE</button></br>
+
+<tr>
+<td><input type="text" name="Initial Scene" id="initial"</td>
+</tr>
+<button onclick="init()">Initial Scene</button>
+<button onclick='download(filename,multi)'>Download</button></br>
+
+<button onclick="targetCOORDS()">CROSSHAIR</button>
+<tr>
+<td><input type="text" name="SceneTitle" id="title"</td>
+</tr>
+<button onclick="scenetitle()">Scene Title</button>
+<tr>
+<td><input type="text" name="SceneHFOV" id="hfov"</td>
+</tr>
+<button onclick="sceneHFOV()">HFOV (110)</button>
+<tr>
+<td><input type="text" name="SceneFriction" id="hfov"</td>
+</tr>
+<button onclick="sceneFRICTION()">Friction (0.05)</button>
+<tr>
+<td><input type="text" name="SceneRotate" id="hfov"</td>
+</tr>
+<button onclick="sceneAUTOROTATION()">Rotation (-2)</button>
+<button onclick="compileScene()">SCENE</button>
+
+<div id="panorama"></div>
+<canvas id="myCanvas" width="1200px" height="100px" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+var br = "<br>";
+var initcode1 = "<script><br>var init = <q>";
+var initcode2 = "<q>;<br><<w>script><br><script><br>	viewer = pannellum.viewer('panorama', {  <br>     	<q>default<q>: {<br>       	 	<q>firstScene<q>: init,<br>       		<q>author<q>: <q>ESE-LLC<q>,<br>        	<q>sceneFadeDuration<q>: 1000<br>   	 }, <br>";
+//
+var scene0 = "    <q>scenes<q>: {<br>"
+var scene1 = "        <q>";
+var scene2 = "<q>: {<br>            <q>title<q>: <q>";
+var scene3 = "<q>,<br>            <q>hfov<q>: ";
+var scene4 = ",<br>            <q>pitch<q>: ";
+var scene5 = ",<br>            <q>yaw<q>: ";
+var scene6 = ",<br>            <q>type<q>: <q>equirectangular<q>,<br>            <q>panorama<q>: <q>";
+var scene7 = "<q>,<br>   	        <q>autoLoad<q>: true,<br>            <q>vaov<q>: ";
+var scene8 = ",<br>            <q>vOffset<q>: ";
+var scene9 = ",<br>            <q>autoRotate<q>: ";
+var scene10 = ",<br>            <q>friction<q>: ";
+var scene11 = ",<br>";
+var scene99 = "<br>       }";
+
+
+
+
+var sceneCOMPILE = "";
+var sceneCOMPILETEMP = "";
+var sceneCOMPILETEMP2 = "";
+var HFOV = 110;
+var FRICTION = "0.05";
+var AUTOROTATE = "-2";
+
+// now we establish many variables:
+// all strings with the appropriate 
+// all carriage returns are to use the <br>
+// one downloaded the code is finished in Notepad++ 
+// with the CTRL+H (replace) the <br> with \r\n
+// be sure to turn on the expanded options
+// that code will be set to input
+
+
+var filename = "hello.txt";
+</script>
+
+
+
+<script>
+function download(filename, text) {
+  multi = initcode1+""+initcode2+sceneCOMPILE;
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+  element.style.display = 'none';
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+}
+</script>
+
+FRICTION AUTOROTATE
+
+<script>
+function compileScene() {
+sceneCOMPILETEMP = scene0+scene1+number+scene2+scenetitle+scene3+HFOV+scene4+pitch+scene5+yaw+scene6+image+scene7+ValVaov+scene8+ValVoffset+scene9+AUTOROTATE+scene10+FRICTION+scene11;
+sceneCOMPILETEMP2 = sceneCOMPILE+sceneCOMPILETEMP;
+sceneCOMPILE = sceneCOMPILETEMP2;
+
+}
+</script>
+
+
+<script>
+function init(text) {
+panoinit = document.getElementById("initial").value;
+multi = initcode1 + panoinit + initcode2 + sceneCOMPILETEMP;
+}
+</script>
+
+<script>
+function scenetitle(text) {
+scenetitle = document.getElementById("title").value;
+        ctx.clearRect(0,0,800,80);
+	ctx.fillText("Scene Title: "+scenetitle, 10, 20);
+}
+</script>
+
+
+<script>
+function sceneHFOV(text) {
+HFOV = document.getElementById("hfov").value;
+}
+</script>
+
+<script>
+function sceneAUTOROTATION(text) {
+AUTOROTATE = document.getElementById("autorotate").value;
+}
+</script>
+
+<script>
+function sceneFRICTION(text) {
+FRICTION = document.getElementById("friction").value;
+}
+</script>
+
+<script>
+	function targetCOORDS(){
+	yaw = viewer.getYaw().toFixed(1);
+	pitch = viewer.getPitch().toFixed(1);
+	ctx.clearRect(0,0,300,80);
+	ctx.fillText("Yaw:", 10, 20);
+	ctx.fillText(viewer.getYaw().toFixed(1), 70, 20);
+	ctx.fillText("Pitch:", 10, 40);
+	ctx.fillText(viewer.getPitch().toFixed(1), 70, 40);
+
+}
+</script>
+
+<script>
+function cameraType() {
+if (Faro.checked) {
+        ValVaov = 150;
+	ValVoffset = 15;
+        ctx.clearRect(0,0,300,80);
+	ctx.fillText("Camera: Faro X330", 10, 20);
+	ctx.fillText("Vertical Field of View: 150 degrees", 10, 40);
+	ctx.fillText("Vertical Field Offset: 15 degrees", 10, 60);
+        }; 
+if (LB5.checked) {
+        ValVaov = 180;
+	ValVoffset = 0;
+        ctx.clearRect(0,0,300,80);
+	ctx.fillText("Camera: LadyBug 5", 10, 20);
+	ctx.fillText("Vertical Field of View: 180 degrees", 10, 40);
+	ctx.fillText("Vertical Field Offset: 0 degrees", 10, 60);
+        }; 
+loadImage()
+}
+</script>
+
+
+<script>
+var ValVaov = 150;
+var ValVoffset = 15;
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+
+ctx.clearRect(0,0,300,60);
+ctx.font = "16px Calibri";
+ctx.fillText("Select Camera: ", 10, 20);
+ctx.fillText("", 10, 40);
+</script>
+
+<script>
+    function sceneAdvance() {
+number = document.getElementById("scene").value;
+if (number<10) {
+	pad = "00";
+	} else {
+	pad = "0";
+	};
+image = path+pad+number+".jpg";
+loadImage()
+}
+</script>
+
+
+<script>
+    function lastPicture() {
+lastpic = document.getElementById("last").value;
+}
+</script>
+
+<script>
+    function imageName() {
+path = "https://www.ese-llc.com/s/"+document.getElementById("path").value;
+number = 0;
+image = path+pad+number+".jpg";
+loadImage()
+}
+</script>
+
+<script>
+function loadImage() {
+viewer.destroy();
+viewer = pannellum.viewer('panorama', {
+    "title": image,
+    "type": "equirectangular",
+    "panorama": image,
+    "autoLoad": true,
+    "vaov": ValVaov,
+    "vOffset": ValVoffset,
+    "autoRotate": -2,
+    "hotSpotDebug": true,
+    "friction": 0.05
+});
+}
+</script>
+
+
+<script>
+var number = 0;
+var path = "https://www.ese-llc.com/s/Atwood";
+var pad;
+var lastpic=99;
+if (number<10) {
+	pad = "00";
+	} else {
+	pad = "0";
+	};
+var image = path+pad+number+".jpg";
+
+viewer = pannellum.viewer('panorama', {
+    "title": image,
+    "type": "equirectangular",
+    "panorama": image,
+    "autoLoad": true,
+    "vaov": ValVaov,
+    "vOffset": ValVoffset,
+    "autoRotate": -2,
+    "hotSpotDebug": true,
+    "friction": 0.05
+});
+
+</script>
+
+
+
+<script>
+// scroll to next image
+function plusFunction() {
+if (number<lastpic) {
+     number++;
+     } else {
+     number = 0;
+     };
+if (number<10) {
+	pad = "00";
+	} else {
+	pad = "0";
+	};
+     image = path+pad+number+".jpg";
+     loadImage();
+}
+</script>
+
+
+<script>
+// scroll to previous image
+function minusFunction() {
+if (number>0) {
+     number--;
+     } else {
+     number = lastpic;
+     };
+if (number<10) {
+	pad = "00";
+	} else {
+	pad = "0";
+	};
+     image = path+pad+number+".jpg";
+     loadImage();
+}
+</script>
+
+</body>
+</html>
