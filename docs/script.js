@@ -1,76 +1,109 @@
-// Get references to the necessary DOM elements
-const dropZone = document.getElementById('drop-zone');
-const fileInput = document.getElementById('file-input');
-const panoramaContainer = document.getElementById('panorama');
-const vOffsetInput = document.getElementById('vOffsetInput');
-const applyVOffsetBtn = document.getElementById('applyVOffset');
+// Global viewer instance
+let viewer = null;
 
-let viewer = null; // To hold the pannellum instance
-let lastFile = null; // Variable to store the last loaded file
+/**
+ * Parses the CSV data from the <pre> tag into a usable format.
+ * @returns {Map<string, object>} A map where keys are filenames and values are pose data.
+ */
+function parsePanoData() {
+    const dataElement = document.getElementById('pano-data');
+    if (!dataElement) return new Map();
+
+    const text = dataElement.textContent;
+    const lines = text.trim().split('\n');
+    const dataMap = new Map();
+
+    lines.forEach(line => {
+        // Skip header or comment lines
+        if (line.startsWith('[') || line.startsWith('#')) return;
+
+        // Clean up line breaks and split by semicolon
+        const cleanedLine = line.replace(/(\r\n|\n|\r)/gm, "").trim();
+        const parts = cleanedLine.split(';').map(p => p.trim());
+        
+        if (parts.length >= 10) {
+            const filename = parts[1];
+            const poseData = {
+                w: parseFloat(parts[6]),
+                x: parseFloat(parts[7]),
+                y: parseFloat(parts[8]),
+                z: parseFloat(parts[9])
+            };
+            dataMap.set(filename, poseData);
+        }
+    });
+    return dataMap;
+}
+
+const panoDataMap = parsePanoData();
+
+/**
+ * Converts a quaternion to Euler angles (in degrees).
+ * @param {object} q - Quaternion with w, x, y, z properties.
+ * @returns {object} An object with pitch, yaw, and roll in degrees.
+ */
+function quaternionToEuler(q) {
+    const { w, x, y, z } = q;
+
+    // Roll (x-axis rotation)
+    const sinr_cosp = 2 * (w * x + y * z);
+    const cosr_cosp = 1 - 2 * (x * x + y * y);
+    const roll = Math.atan2(sinr_cosp, cosr_cosp) * (180 / Math.PI);
+
+    // Pitch (y-axis rotation)
+    const sinp = 2 * (w * y - z * x);
+    let pitch;
+    if (Math.abs(sinp) >= 1) {
+        pitch = (Math.sign(sinp) * Math.PI / 2) * (180 / Math.PI); // use 90 degrees if out of range
+    } else {
+        pitch = Math.asin(sinp) * (180 / Math.PI);
+    }
+
+    return { roll, pitch };
+}
+
 
 /**
  * Loads a panoramic image into the Pannellum viewer.
  * @param {File} file - The image file to load.
  */
 function loadPanorama(file) {
-    if (file) {
-        lastFile = file; // Store the file
-    } else if (lastFile) {
-        file = lastFile; // Reuse the last file if none is provided
-    } else {
-        return; // Exit if no file is available
-    }
-
     if (viewer) {
         viewer.destroy();
     }
     
     const imageUrl = URL.createObjectURL(file);
+    const pose = panoDataMap.get(file.name);
+    
+    let horizonPitch = 0;
+    let horizonRoll = 0;
 
-    // 1. Determine camera settings from radio buttons
-    const cameraType = document.querySelector('input[name="camera"]:checked').value;
-    let vaov, vOffset;
-
-    if (cameraType === 'faro') {
-        vaov = 150;
-        vOffset = 15;
-    } else { // for 'lb5' and 'navis'
-        vaov = 180;
-        vOffset = 0;
+    if (pose) {
+        const eulerAngles = quaternionToEuler(pose);
+        horizonPitch = eulerAngles.pitch;
+        // We negate the roll for Pannellum's coordinate system
+        horizonRoll = -eulerAngles.roll; 
+    } else {
+        console.warn(`No pose data found for ${file.name}. Using default horizon.`);
     }
 
-    // 2. Override vOffset if a manual value is entered
-    const manualVOffset = parseFloat(vOffsetInput.value);
-    if (!isNaN(manualVOffset)) {
-        vOffset = manualVOffset;
-    }
-
-    // Initialize Pannellum with the correct projection settings
+    // Initialize Pannellum
     viewer = pannellum.viewer('panorama', {
         "type": "equirectangular",
         "panorama": imageUrl,
         "autoLoad": true,
         "showControls": true,
         "title": file.name,
-        "vaov": vaov,
-        "vOffset": vOffset
+        // Apply the calculated corrections
+        "horizonPitch": horizonPitch,
+        "horizonRoll": horizonRoll
     });
 }
 
 // --- Event Listeners ---
 
-// Reload the pano with new settings when a radio button is clicked
-document.querySelectorAll('input[name="camera"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-        vOffsetInput.value = ''; // Clear manual offset when changing camera type
-        loadPanorama(); 
-    });
-});
-
-// Reload the pano when the "Apply" button is clicked
-applyVOffsetBtn.addEventListener('click', () => {
-    loadPanorama();
-});
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
 
 // Drag and Drop listeners
 dropZone.addEventListener('dragover', (e) => {
