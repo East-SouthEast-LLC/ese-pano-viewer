@@ -1,0 +1,55 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.main-container {
+    width: 95vw;
+    height: 90vh;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    background-color: #fff;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+#panorama {
+    width: 100%;
+    height: 100%;
+}
+
+#drop-zone {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    height: 50%;
+    border: 3px dashed #ccc;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #aaa;
+    background-color: rgba(255, 255, 255, 0.8);
+    transition: background-color 0.3s, border-color 0.3s;
+    cursor: pointer;
+}
+
+#drop-zone.drag-over {
+    border-color: #3887be;
+    background-color: rgba(230, 245, 255, 0.9);
+}
+
+/* Hide the drop zone when a panorama is loaded */
+#panorama:not(:empty) + #drop-zone {
+    display: none;
+}
