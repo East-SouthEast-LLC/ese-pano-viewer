@@ -1,22 +1,17 @@
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+html, body {
     margin: 0;
     padding: 0;
-    background-color: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Prevents scrollbars on the iframe itself */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .main-container {
-    width: 95vw;
-    height: 90vh;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    background-color: #fff;
-    border-radius: 8px;
+    width: 100%;
+    height: 100%;
     position: relative;
-    overflow: hidden;
+    background-color: #fff;
 }
 
 #panorama {

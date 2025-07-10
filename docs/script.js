@@ -18,13 +18,15 @@ function loadPanorama(file) {
     // The key step: create a temporary URL for the local file
     const imageUrl = URL.createObjectURL(file);
 
-    // Initialize Pannellum
+    // Initialize Pannellum with the corrected projection settings
     viewer = pannellum.viewer('panorama', {
         "type": "equirectangular",
         "panorama": imageUrl,
         "autoLoad": true,
         "showControls": true,
-        "title": file.name // Use the file name as the title
+        "title": file.name, // Use the file name as the title
+        "vaov": 180,       //  <-- ADD THIS LINE
+        "vOffset": 0       //  <-- AND THIS LINE
     });
 }
 
