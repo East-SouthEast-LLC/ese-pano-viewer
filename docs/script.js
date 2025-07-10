@@ -82,7 +82,7 @@ function loadPanorama(file) {
         const eulerAngles = quaternionToEuler(pose);
         horizonPitch = eulerAngles.pitch;
         // We negate the roll for Pannellum's coordinate system
-        horizonRoll = -eulerAngles.roll; 
+        horizonRoll = eulerAngles.roll; 
     } else {
         console.warn(`No pose data found for ${file.name}. Using default horizon.`);
     }
