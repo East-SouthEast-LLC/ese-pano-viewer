@@ -4,66 +4,83 @@ const fileInput = document.getElementById('file-input');
 const panoramaContainer = document.getElementById('panorama');
 
 let viewer = null; // To hold the pannellum instance
+let lastFile = null; // Variable to store the last loaded file
 
 /**
  * Loads a panoramic image into the Pannellum viewer.
  * @param {File} file - The image file to load.
  */
 function loadPanorama(file) {
-    // If there's already a viewer, destroy it to free up resources
+    if (file) {
+        lastFile = file; // Store the file
+    } else if (lastFile) {
+        file = lastFile; // Reuse the last file if none is provided
+    } else {
+        return; // Exit if no file is available
+    }
+
     if (viewer) {
         viewer.destroy();
     }
-
-    // The key step: create a temporary URL for the local file
+    
     const imageUrl = URL.createObjectURL(file);
 
-    // Initialize Pannellum with the corrected projection settings
+    // Determine camera settings from radio buttons
+    const cameraType = document.querySelector('input[name="camera"]:checked').value;
+    let vaov, vOffset;
+
+    if (cameraType === 'faro') {
+        vaov = 150;
+        vOffset = 15;
+    } else { // 'lb5'
+        vaov = 180;
+        vOffset = 0;
+    }
+
+    // Initialize Pannellum with the correct projection settings
     viewer = pannellum.viewer('panorama', {
         "type": "equirectangular",
         "panorama": imageUrl,
         "autoLoad": true,
         "showControls": true,
-        "title": file.name, // Use the file name as the title
-        "vaov": 180,       //  <-- ADD THIS LINE
-        "vOffset": 0       //  <-- AND THIS LINE
+        "title": file.name,
+        "vaov": vaov,
+        "vOffset": vOffset
     });
 }
 
-// --- Event Listeners for Drag and Drop ---
+// --- Event Listeners ---
 
-// 1. When a file is dragged over the drop zone
+// Add event listeners to radio buttons to reload the pano with new settings
+document.querySelectorAll('input[name="camera"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+        loadPanorama(); // Reload with the last file
+    });
+});
+
 dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault(); // Prevent the browser's default behavior
+    e.preventDefault();
     dropZone.classList.add('drag-over');
 });
 
-// 2. When a file leaves the drop zone area
 dropZone.addEventListener('dragleave', (e) => {
     e.preventDefault();
     dropZone.classList.remove('drag-over');
 });
 
-// 3. When a file is dropped onto the zone
 dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('drag-over');
-
-    // Get the first file that was dropped
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
         loadPanorama(file);
     }
 });
 
-// --- Fallback for Clicking ---
-
-// When the drop zone is clicked, trigger the hidden file input
 dropZone.addEventListener('click', () => {
     fileInput.click();
 });
 
-// When a file is selected via the file dialog
 fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
